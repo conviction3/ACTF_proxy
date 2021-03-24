@@ -198,23 +198,31 @@ class Header:
 
 
 class Package:
-    def __init__(self, payload: bytes, package_hashcode: bytes, message: str = None,
-                 datatype: PackageDataType = PackageDataType.BINARY, header=None):
-        """
-            Every package has a header, the header contains the package's length,
-        before sending the package, must send header first, otherwise the receiver
-        has no idea to the package's size.
-        """
-        self.payload = payload
-        if header is not None:
-            self.header = header
-        else:
-            header = Header()
-            header.set_package_len(package_len=len(payload))
-            header.set_package_hashcode(hashcode=package_hashcode)
-            header.set_package_data_type(data_type=datatype)
-            header.set_message(message=message)
-            self.header = header
+    def __int__(self, payload: bytes, data_type: PackageDataType, header: Header = None):
+        self.__payload = payload
+        self.__data_type = data_type
+        self.__header = header
+
+    def get_header(self):
+        return self.__header
+
+    # def __init__(self, payload: bytes, package_hashcode: bytes, message: str = None,
+    #              datatype: PackageDataType = PackageDataType.BINARY, header=None):
+    #     """
+    #         Every package has a header, the header contains the package's length,
+    #     before sending the package, must send header first, otherwise the receiver
+    #     has no idea to the package's size.
+    #     """
+    #     self.payload = payload
+    #     if header is not None:
+    #         self.header = header
+    #     else:
+    #         header = Header()
+    #         header.set_package_len(package_len=len(payload))
+    #         header.set_package_hashcode(hashcode=package_hashcode)
+    #         header.set_package_data_type(data_type=datatype)
+    #         header.set_message(message=message)
+    #         self.header = header
 
 
 class PackageWithTimer:
@@ -237,7 +245,13 @@ def send_package(package: Package, sock: Socket):
 
 
 def receive_package(sock: Socket):
-    # parse header
+    """
+        Receive the header first, then receive the package if has.
+    :param sock:
+    :return:    Header object if the size of package is zero.
+                Package object if the size of package is not zero,
+            but there's still a header object in the package object.
+    """
     header_data = sock.recv(Header.HEADER_LEN)
 
     header = Header()
@@ -245,6 +259,11 @@ def receive_package(sock: Socket):
 
     if not header.has_package():
         return header
+    payload = sock.recv(header.get_package_len(parse=True))
+    data_type = header.get_package_data_type(parse=True)
+
+    package = Package(payload=payload, data_type=data_type, header=header)
+    return package
 
 
 # package_len = int.from_bytes(header_data[:Header.HEADER_PACKAGE_LEN_LEN], byteorder='big', signed=False)

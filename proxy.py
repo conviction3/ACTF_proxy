@@ -1,6 +1,9 @@
 from threading import Thread
-from package import receive_package
+from package import receive_package, Package, Header
 from socket import socket as Socket
+import logging
+
+logging.basicConfig(level=logging.DEBUG, format="[%(asctime)s]: %(name)s %(levelname)s %(message)s")
 
 
 class Proxy:
@@ -15,8 +18,16 @@ class Proxy:
     def start_receive_thread(self):
         def temp():
             while True:
-                header = receive_package(self.socket)
+                result = receive_package(self.socket)
+                if isinstance(result, Header):
+                    header = result
+                # elif isinstance(result, Package):
+                else:
+                    header = result.get_header()
+                logging.debug(f"hash: {header.get_package_hashcode()}\t message:{header.get_message(parse=True)}")
+
                 print(header.get_message(parse=True))
+
         t = Thread(target=temp)
         t.start()
         t.join()
