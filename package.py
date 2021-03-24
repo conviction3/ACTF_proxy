@@ -1,11 +1,13 @@
 from socket import socket as Socket
 from enum import Enum
+import hashlib
 
 
 class PackageDataType(Enum):
-    BINARY = 0x00
-    INT = 0x01
-    UTF8_STR = 0x02
+    BINARY = bytes(0x00)
+    # size of int must be 4 bytes, signed
+    INT = bytes(0x01)
+    UTF8_STR = bytes(0x02)
 
     @staticmethod
     def get_type_by_value(value) -> Enum:
@@ -17,29 +19,29 @@ class PackageDataType(Enum):
 
 class Header:
     """
-    ------------------------------------------------------------------------------------
-    | 0                4B                  8B                  9B   13B          1024B |
-    |         4B        |       4B         |        1B         | 4B  |      1011B      |
-    | length of package | package hashcode | package data type | ACK | message string  |
-    ------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------
+    | 0                4B                  20B                21B         37B          1024B |
+    |         4B        |        16B       |        1B         |    16B    |       987B      |
+    | length of package | package hashcode | package data type |    ACK    | message string  |
+    ------------------------------------------------------------------------------------------
 
         The header has 1024 bytes data.
     length of package   :       Could be zero if there's no package, will be useful for message transfer only.
                             There's 4B for it, but it could not be greater than 1048576 (b'\x00\x10\x00\x00'),
                             for 1024*1024=1048576, namely the length of package could not be greater than 1MB.
-    package hashcode    :       Should be a unique identifier, but could not be zero.
+    package hashcode    :       Should be a unique identifier, commonly MD5.
     ACK                 :       Acknowledge character, the value is one of the identifier of the packages. Zero
                             for none.
     package data type   :       See the supported types in PackageDataType below.
-    message string      :       Must encode with utf-8, could store 1011 pure ASCII characters or 337 pure Chinese
+    message string      :       Must encode with utf-8, could store 987 pure ASCII characters or 329 pure Chinese
                             characters.
     """
     HEADER_LEN = 1024
     HEADER_PACKAGE_LEN_OFFSET, HEADER_PACKAGE_LEN_LEN = 0, 4
-    HEADER_PACKAGE_HASHCODE_OFFSET, HEADER_PACKAGE_HASHCODE_LEN = 4, 4
-    HEADER_PACKAGE_DATATYPE_OFFSET, HEADER_PACKAGE_DATATYPE_LEN = 8, 1
-    HEADER_ACK_OFFSET, HEADER_ACK_LEN = 9, 4
-    HEADER_MESSAGE_OFFSET, HEADER_MESSAGE_LEN = 13, 1011
+    HEADER_PACKAGE_HASHCODE_OFFSET, HEADER_PACKAGE_HASHCODE_LEN = 4, 16
+    HEADER_PACKAGE_DATATYPE_OFFSET, HEADER_PACKAGE_DATATYPE_LEN = 20, 1
+    HEADER_ACK_OFFSET, HEADER_ACK_LEN = 21, 16
+    HEADER_MESSAGE_OFFSET, HEADER_MESSAGE_LEN = 37, 987
 
     def __init__(self,
                  package_len: bytes = b'\x00' * HEADER_PACKAGE_LEN_LEN,
@@ -198,13 +200,26 @@ class Header:
 
 
 class Package:
-    def __int__(self, payload: bytes, data_type: PackageDataType, header: Header = None):
+    def __init__(self, payload: bytes, data_type: PackageDataType, header: Header = None):
         self.__payload = payload
         self.__data_type = data_type
         self.__header = header
 
     def get_header(self):
         return self.__header
+
+    def get_payload(self):
+        return self.__payload
+
+    def generate_default_header(self, msg: str = None):
+        header = Header()
+        header.set_message(msg)
+        header.set_package_len(len(self.__payload))
+
+        hash_value: bytes = hashlib.md5(self.__payload).digest()
+        header.set_package_hashcode(hash_value)
+
+        self.__header = header
 
     # def __init__(self, payload: bytes, package_hashcode: bytes, message: str = None,
     #              datatype: PackageDataType = PackageDataType.BINARY, header=None):
@@ -237,8 +252,8 @@ class PackageWithTimer:
 
 
 def send_package(package: Package, sock: Socket):
-    header = package.header
-    payload = package.payload
+    header = package.get_header()
+    payload = package.get_payload()
 
     sock.send(header.get_header_data())
     sock.send(payload)

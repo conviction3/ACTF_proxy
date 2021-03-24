@@ -16,10 +16,10 @@ if __name__ == '__main__':
          / /| | / /      / /  / /_     / /_/ // /_/ // / / /|   /  \  / 
         / ___ |/ /___   / /  / __/    / ____// _, _// /_/ //   |   / /  
        /_/  |_|\____/  /_/  /_/      /_/    /_/ |_| \____//_/|_|  /_/   
-                                                                            
     """)
+    proxy = Proxy(socket=s)
 
-    while True:
-        sock, addr = s.accept()
-        log.info(f"node {addr} connected")
-        proxy = Proxy(socket=sock)
+    # while True:
+    #     sock, addr = s.accept()
+    #     log.info(f"node {addr} connected")
+    #     proxy = Proxy(socket=sock)
