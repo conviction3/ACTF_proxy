@@ -77,3 +77,21 @@ def int2bytes(val: int) -> bytes:
 def int_list_to_bytes(int_list: List[int]) -> bytes:
     bytes_list = [int2bytes(i) for i in int_list]
     return reduce(lambda x, y: x + y, bytes_list)
+
+
+def bytes2int(val: bytes) -> int:
+    """
+        The size of int must be 8 bytes, signed.
+    """
+    return int.from_bytes(val, byteorder='big', signed=True)
+
+
+def bytes_to_int_list(_bytes: bytes) -> List[int]:
+    if len(_bytes) % 8 != 0:
+        raise ValueError("length of bytes must be 8 times")
+
+    temp_bytes_list = [_bytes[i:i + 8] for i in range(0, len(_bytes), 8)]
+    int_list = []
+    for item in temp_bytes_list:
+        int_list.append(bytes2int(item))
+    return int_list

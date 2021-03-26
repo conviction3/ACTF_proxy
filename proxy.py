@@ -39,6 +39,7 @@ class Proxy:
             log.debug(f"Total {len(self.client_list)} node(s)")
 
             self.send_raw_data(client)
+            self.start_receive_thread(client)
 
     def __get_data_slice(self) -> Tuple[int, int]:
         """
@@ -68,28 +69,30 @@ class Proxy:
         row_data_desc = RowDataDesc(_slice=_slice, _hash=get_obj_hash(slice_data), file_name=file_name)
 
         package = Package(payload=int_list_to_bytes(slice_data), data_type=PackageDataType.INT)
-        msg = "transmit row data"
+        msg = "transmit raw data"
         package.generate_default_header(msg)
         send_package(package, client.socket)
 
         log.debug(
-            f"-> Sending row data[{_slice[0]}:{_slice[1]}] to client \"{client.uuid}\" "
-            f"| message: \"{msg}\" "
-            f"| hash: {package.get_header().get_package_hashcode().hex()}")
+            f"-> Sending raw data[{_slice[0]}:{_slice[1]}] to client \"{client.uuid}\" | "
+            + package.get_desc())
 
-    def start_receive_thread(self):
+    def start_receive_thread(self, client: Client):
         def temp():
             while True:
-                result = receive_package(self.socket)
+                result = receive_package(client.socket)
                 if isinstance(result, Header):
                     header = result
-                # elif isinstance(result, Package):
+                    log.debug(f"<- message: \"{header.get_message()}\" "
+                              f"| hash: {header.get_package_hashcode()}")
                 else:
+                    package = result
                     header = result.get_header()
-                log.debug(f"hash: {header.get_package_hashcode()}\t message:{header.get_message(parse=True)}")
-
-                print(header.get_message(parse=True))
+                    log.debug("<- " + package.get_desc())
+                    if header.has_ack():
+                        log.info(
+                            f"Slice {header.get_ack(parse=True)} done by client {client.uuid}, "
+                            f"result = {package.get_payload(parse=True)}")
 
         t = Thread(target=temp)
         t.start()
-        t.join()
