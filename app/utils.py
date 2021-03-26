@@ -14,11 +14,9 @@ class Logger(logging.Logger):
         self.filename = filename
 
         """
-            File log handler, for writing log to file. One log file per day,
-        only keep 30 day's logs.
+            File log handler
         """
-        fh = logging.handlers.TimedRotatingFileHandler(self.filename, 'D', 1, 30)
-        fh.suffix = "%Y%m%d-%H%M.log"
+        fh = logging.FileHandler(self.filename)
         fh.setLevel(logging.DEBUG)
         """
             Console log handler.
