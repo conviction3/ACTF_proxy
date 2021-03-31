@@ -12,6 +12,8 @@ class Client:
     def __init__(self, uuid: str, socket: Socket):
         self.uuid = uuid
         self.socket = socket
+        self.thread = None
+        self.stop = False
 
 
 class RowDataDesc:
@@ -25,10 +27,28 @@ class RowDataDesc:
 
 
 class Proxy:
+    """
+        Suppose there're would be 8 ordered packages, namely when proxy had received 8 packages which
+    seq from 0 to 8, then the job is done, the ordered packages will be combined into a one single huger
+    package then send to the sever.
+    """
+    ORDERED_PACKAGE_NUM = 8
+
     def __init__(self, socket: Socket):
         self.socket: Socket = socket
         self.client_list: List[Client] = []
         self.assigned_data: List[RowDataDesc] = []
+        # """
+        #     The package received from clients will be placed into this buffer immediately.
+        # Then there will be another thread to handle the buffer to reorder the package by package seq.
+        # """
+        # self.received_buffer: List[Package] = []
+        """
+            List of packages. When the proxy had received packages from client, it will be placed the
+        package into the specific position of the list by the package seq.
+        """
+        self.ordered_packages: List[Package] = []
+        self.__init_ordered_packages()
 
         while True:
             # establish connect to the client
@@ -38,8 +58,11 @@ class Proxy:
             log.info(f"Node {addr} connected, uuid: {client.uuid}")
             log.debug(f"Total {len(self.client_list)} node(s)")
 
-            self.send_raw_data(client)
+            # self.send_raw_data(client)
             self.start_receive_thread(client)
+
+    def __init_ordered_packages(self):
+        self.ordered_packages = [None for i in range(Proxy.ORDERED_PACKAGE_NUM)]
 
     def __get_data_slice(self) -> Tuple[int, int]:
         """
@@ -79,7 +102,7 @@ class Proxy:
 
     def start_receive_thread(self, client: Client):
         def temp():
-            while True:
+            while not client.stop:
                 result = receive_package(client.socket)
                 if isinstance(result, Header):
                     header = result
@@ -88,11 +111,76 @@ class Proxy:
                 else:
                     package = result
                     header = result.get_header()
-                    log.debug("<- " + package.get_desc())
-                    if header.has_ack():
-                        log.info(
-                            f"Slice {header.get_ack(parse=True)} done by client {client.uuid}, "
-                            f"result = {package.get_payload(parse=True)}")
+                    log.debug(f"[{client.uuid}] <- " + package.get_desc())
+                    # place the package into ordered list by the package seq
+                    if not header.has_package_seq():
+                        continue
+                    seq = header.get_package_seq(parse=True)
+                    if self.check_ordered_packages(_log=False):
+                        break
+                    self.ordered_packages[seq] = package
+                    # double check
+                    if self.check_ordered_packages(_log=True):
+                        break
+            """
+                If program running to this, meaning the ordered_packages has been full-filled.
+            """
+            log.info("The ordered packages has been full-filled, job is done.")
+            self.finish_job()
 
         t = Thread(target=temp)
+        client.thread = t
         t.start()
+
+    def finish_job(self):
+        """
+            Close socket, delete client item.
+        :return:
+        """
+        for client in self.client_list:
+            client.stop = True
+            client.socket.close()
+            log.info(f"Close connection of {client.uuid}")
+        self.client_list.clear()
+        # todo: send the combined packages
+        self.__init_ordered_packages()
+
+    def check_ordered_packages(self, _log: False) -> bool:
+        """
+            Check the status of ordered package list
+        :param _log: print the status or not
+        :return: False: if the list is not full
+        """
+        none_count = 0
+        for item in self.ordered_packages:
+            if item is None and not _log:
+                return False
+            if item is None and _log:
+                none_count += 1
+        if _log:
+            log.debug(f"{len(self.ordered_packages) - none_count} of {len(self.ordered_packages)}"
+                      f" ordered packages is filled")
+        if none_count == 0:
+            return True
+        else:
+            return False
+
+    # def start_receive_thread(self, client: Client):
+    #     def temp():
+    #         while True:
+    #             result = receive_package(client.socket)
+    #             if isinstance(result, Header):
+    #                 header = result
+    #                 log.debug(f"<- message: \"{header.get_message()}\" "
+    #                           f"| hash: {header.get_package_hashcode()}")
+    #             else:
+    #                 package = result
+    #                 header = result.get_header()
+    #                 log.debug("<- " + package.get_desc())
+    #                 if header.has_ack():
+    #                     log.info(
+    #                         f"Slice {header.get_ack(parse=True)} done by client {client.uuid}, "
+    #                         f"result = {package.get_payload(parse=True)}")
+    #
+    #     t = Thread(target=temp)
+    #     t.start()
