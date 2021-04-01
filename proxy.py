@@ -1,8 +1,9 @@
 from threading import Thread
-from package import receive_package, Package, Header, PackageDataType, send_package
+from package import receive_package, Package, Header, PackageDataType, send_package, send_message
 from socket import socket as Socket
 from app.utils import Logger, generate_client_uuid, read_csv_int, get_obj_hash, int_list_to_bytes
 from typing import List, Tuple
+import queue
 import time
 
 log = Logger()
@@ -26,6 +27,18 @@ class RowDataDesc:
         self.finished = False
 
 
+class SeqData:
+    def __init__(self, seq: int, data):
+        self.seq = seq
+        self.data = data
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        return f"({self.seq},{self.data})"
+
+
 class Proxy:
     """
         Suppose there're would be 8 ordered packages, namely when proxy had received 8 packages which
@@ -33,22 +46,34 @@ class Proxy:
     package then send to the sever.
     """
     ORDERED_PACKAGE_NUM = 8
+    MAX_BUFFER = 10
 
     def __init__(self, socket: Socket):
         self.socket: Socket = socket
         self.client_list: List[Client] = []
         self.assigned_data: List[RowDataDesc] = []
-        # """
-        #     The package received from clients will be placed into this buffer immediately.
-        # Then there will be another thread to handle the buffer to reorder the package by package seq.
-        # """
-        # self.received_buffer: List[Package] = []
         """
-            List of packages. When the proxy had received packages from client, it will be placed the
-        package into the specific position of the list by the package seq.
+            The package received from clients will be placed into this buffer immediately, then 
+        there will be another thread to handle the buffer to reorder the package by package seq.
+        If the this buffer is full, then should limit the sending speed of clients.
+            Actually, the received_buffer and the ordered_packages is a producer-consumer model.
+        The received buffer is a critical resources, the thread which receives packages from 
+        clients is producers, and the thread which retrieves data from the buffer is a consumer.
+            The item in queue is class SeqData
+        """
+        self.received_buffer: queue.Queue = queue.Queue(maxsize=Proxy.MAX_BUFFER)
+        """
+        #     List of packages. When the proxy had received packages from client, it will be placed the
+        # package into the specific position of the list by the package seq.
+            List of ordered packages, the size of this list is grater than received_buffer a lot.
+        This list could be stored in files or database orderly, then combine to one package or do some
+        calculation before sending to server.
+            But for now, it's just stored in memory.
         """
         self.ordered_packages: List[Package] = []
         self.__init_ordered_packages()
+
+        self.start_consume()
 
         while True:
             # establish connect to the client
@@ -100,9 +125,24 @@ class Proxy:
             f"-> Sending raw data[{_slice[0]}:{_slice[1]}] to client \"{client.uuid}\" | "
             + package.get_desc())
 
-    def start_receive_thread(self, client: Client):
+    def start_consume(self):
         def temp():
-            while not client.stop:
+            while True:
+                buffer_length = self.received_buffer.qsize()
+                if buffer_length > 0:
+                    for i in range(buffer_length):
+                        seq_data: SeqData = self.received_buffer.get()
+                        log.debug(f"consume data {seq_data.seq}")
+                        self.print_buffer()
+                        time.sleep(1)
+
+        t = Thread(target=temp)
+        t.start()
+
+    def start_receive_thread(self, client: Client):
+
+        def temp():
+            while True:
                 result = receive_package(client.socket)
                 if isinstance(result, Header):
                     header = result
@@ -111,17 +151,42 @@ class Proxy:
                 else:
                     package = result
                     header = result.get_header()
-                    log.debug(f"[{client.uuid}] <- " + package.get_desc())
+                    log.debug(f"[{client.uuid}] -> " + package.get_desc())
                     # place the package into ordered list by the package seq
                     if not header.has_package_seq():
                         continue
                     seq = header.get_package_seq(parse=True)
-                    if self.check_ordered_packages(_log=False):
-                        break
-                    self.ordered_packages[seq] = package
-                    # double check
-                    if self.check_ordered_packages(_log=True):
-                        break
+                    # suppose the payload is list of integer, ordered
+                    # todo: may there should be a list length in header
+                    payload: List[int] = package.get_payload(parse=True)
+                    payload_length = len(payload)
+
+                    buffer_length = self.received_buffer.qsize()
+                    # ---> discard the package
+                    if payload_length + buffer_length > Proxy.MAX_BUFFER:
+                        log.warning(f"The buffer size is {buffer_length} of {Proxy.MAX_BUFFER} now, "
+                                    f"but received payload size is {payload_length}, "
+                                    f"the package will be discarded!")
+                        send_message(message=Header.MSG_PACKAGE_DISCARD, ack=header.get_package_hashcode(),
+                                     sock=client.socket)
+                        continue
+                    # <--- discard the package
+                    # ---> parse and handle the package
+                    for i in range(len(payload)):
+                        self.received_buffer.put(SeqData(seq=seq + i, data=payload[i]))
+                    send_message(message=Header.MSG_ACKNOWLEDGED, ack=header.get_package_hashcode(),
+                                 sock=client.socket)
+                    self.print_buffer()
+                    # <--- parse and handle the package
+
+                    # unpack the package, then add it to queue
+
+                    # if self.check_ordered_packages(_log=False):
+                    #     break
+                    # self.ordered_packages[seq] = package
+                    # # double check
+                    # if self.check_ordered_packages(_log=True):
+                    #     break
             """
                 If program running to this, meaning the ordered_packages has been full-filled.
             """
@@ -131,6 +196,9 @@ class Proxy:
         t = Thread(target=temp)
         client.thread = t
         t.start()
+
+    def print_buffer(self):
+        log.debug(f"the buffer data is:{list(self.received_buffer.queue)}")
 
     def finish_job(self):
         """

@@ -67,6 +67,9 @@ class Header:
     HEADER_ACK_OFFSET, HEADER_ACK_LEN = 29, 16
     HEADER_MESSAGE_OFFSET, HEADER_MESSAGE_LEN = 45, 979
 
+    MSG_PACKAGE_DISCARD = "Package has been discarded"
+    MSG_ACKNOWLEDGED = "Acknowledged"
+
     def __init__(self,
                  package_len: bytes = b'\x00' * HEADER_PACKAGE_LEN_LEN,
                  seq: bytes = int2bytes(-1),
@@ -300,6 +303,14 @@ def send_package(package: Package, sock: Socket):
 
     sock.send(header.get_header_data())
     sock.send(payload)
+
+
+def send_message(message: str, sock: Socket, ack: bytes = None):
+    header = Header()
+    header.set_message(message)
+    if ack is not None:
+        header.set_ack(ack)
+    sock.send(header.get_header_data())
 
 
 def receive_package(sock: Socket):
