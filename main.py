@@ -19,7 +19,3 @@ if __name__ == '__main__':
     """)
     proxy = Proxy(socket=s)
 
-    # while True:
-    #     sock, addr = s.accept()
-    #     log.info(f"node {addr} connected")
-    #     proxy = Proxy(socket=sock)
