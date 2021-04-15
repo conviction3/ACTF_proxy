@@ -6,6 +6,7 @@ from app.utils import Logger, generate_client_uuid, read_csv_int, get_obj_hash, 
 from typing import List, Tuple
 import queue
 import time
+import sqlite3
 
 log = Logger()
 
@@ -34,10 +35,11 @@ class Proxy:
     seq from 0 to 8, then the job is done, the ordered packages will be combined into a one single huger
     package then send to the sever.
     """
-    TARGET_SEQ_DATA_NUM = 10
-    MAX_BUFFER = 10
 
-    def __init__(self, socket: Socket):
+    # TARGET_SEQ_DATA_NUM = 10
+    # MAX_BUFFER = 10
+
+    def __init__(self, socket: Socket, target_seq_data_num: int, max_buffer: int = 10):
         self.socket: Socket = socket
         self.client_list: List[Client] = []
 
@@ -45,6 +47,8 @@ class Proxy:
 
         self.job_finished_flag = False
         self.job_finished_flag_lock = Lock()
+
+        self.target_seq_data_num: int = target_seq_data_num
 
         """
             The package received from clients will be placed into this buffer immediately, then 
@@ -55,7 +59,8 @@ class Proxy:
         is producers, and the thread which retrieves data from the buffer is a consumer.
             The item in queue is class SeqData
         """
-        self.received_buffer: queue.Queue = queue.Queue(maxsize=Proxy.MAX_BUFFER)
+        self.max_buffer = max_buffer
+        self.received_buffer: queue.Queue = queue.Queue(maxsize=self.max_buffer)
         """
             List of ordered packages, the size of this list is grater than received_buffer a lot.
         This list could be stored in files or database orderly, then combine to one package or do some
@@ -78,7 +83,7 @@ class Proxy:
             self.start_receive_thread(client)
 
     def __init_ordered_packages(self):
-        self.ordered_seq_data = [None for i in range(Proxy.TARGET_SEQ_DATA_NUM)]
+        self.ordered_seq_data = [None for i in range(self.target_seq_data_num)]
 
     def start_consume(self):
         """
@@ -86,6 +91,20 @@ class Proxy:
         """
 
         def temp():
+            conn = sqlite3.connect('./data/result_data.db')
+            c = conn.cursor()
+            c.execute("""
+                DROP TABLE seq_data
+            """)
+            c.execute(
+                '''CREATE TABLE seq_data
+                    (   seq     INTEGER PRIMARY KEY NOT NULL,
+                        number  INT             NOT NULL
+                    );
+                '''
+            )
+            conn.commit()
+
             while True:
                 if self.job_finished_flag:
                     self.finish_job()
@@ -97,10 +116,18 @@ class Proxy:
                         log.debug(f"consume seq data {seq_data}")
                         self.ordered_seq_data[seq_data.seq] = seq_data
                         self.consuming_count += 1
+                        # time.sleep(1)
+                        c.execute(f'''
+                            INSERT INTO seq_data(seq,number)
+                            VALUES
+                            (
+                                {seq_data.seq},{seq_data.data}
+                            )
+                        ''')
+                        conn.commit()
                         self.print_buffer()
-                        time.sleep(1)
 
-                        if self.consuming_count == Proxy.TARGET_SEQ_DATA_NUM:
+                        if self.consuming_count == self.target_seq_data_num:
                             self.job_finished_flag_lock.acquire()
                             self.job_finished_flag = True
                             self.job_finished_flag_lock.release()
@@ -136,8 +163,8 @@ class Proxy:
 
                         buffer_length = self.received_buffer.qsize()
                         # ---> discard the package
-                        if payload_length + buffer_length > Proxy.MAX_BUFFER:
-                            log.warning(f"The buffer size is {buffer_length} of {Proxy.MAX_BUFFER} now, "
+                        if payload_length + buffer_length > self.max_buffer:
+                            log.warning(f"The buffer size is {buffer_length} of {self.max_buffer} now, "
                                         f"but received payload size is {payload_length}, "
                                         f"the package will be discarded!")
                             send_message(message=Header.MSG_PACKAGE_DISCARD, ack=header.get_package_hashcode(),
@@ -182,13 +209,14 @@ class Proxy:
         """
             Add all seq data, combine to one package, send to server
         """
-        result = 0
+        temp_list = []
         for seq_data in self.ordered_seq_data:
-            result += seq_data.data
-        temp_list = [result]
+            temp_list.append(seq_data.data)
+            # result += seq_data.data
+        # temp_list = [result]
         package = Package(payload=int_list_to_bytes(temp_list), data_type=PackageDataType.INT)
         package.generate_default_header()
-        package.get_header().set_message("Total count")
+        package.get_header().set_message("Ordered min value group")
         send_package(package, s)
 
 # ---------------------------> deprecated for now <---------------------------------------

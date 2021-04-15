@@ -17,5 +17,4 @@ if __name__ == '__main__':
         / ___ |/ /___   / /  / __/    / ____// _, _// /_/ //   |   / /  
        /_/  |_|\____/  /_/  /_/      /_/    /_/ |_| \____//_/|_|  /_/   
     """)
-    proxy = Proxy(socket=s)
-
+    proxy = Proxy(socket=s, target_seq_data_num=30, max_buffer=5)
