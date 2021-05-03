@@ -156,7 +156,6 @@ class Proxy:
                             continue
                         seq = header.get_package_seq(parse=True)
                         # suppose the payload is list of integer, ordered
-                        # todo: may there should be a list length in header
                         payload: List[int] = package.get_payload(parse=True)
                         payload_length = len(payload)
 

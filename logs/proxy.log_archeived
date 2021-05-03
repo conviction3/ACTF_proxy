@@ -1,0 +1,106 @@
+[2021-05-03 13:57:22,140] - main.py [Line:19] - [ INFO]-[thread:12720]-[process:6400] : 
+           ___    ______ ______ ______   ____   ____   ____  _  ____  __
+          /   |  / ____//_  __// ____/  / __ \ / __ \ / __ \| |/ /\ \/ /
+         / /| | / /      / /  / /_     / /_/ // /_/ // / / /|   /  \  / 
+        / ___ |/ /___   / /  / __/    / ____// _, _// /_/ //   |   / /  
+       /_/  |_|\____/  /_/  /_/      /_/    /_/ |_| \____//_/|_|  /_/   
+    
+[2021-05-03 13:57:30,740] - proxy.py [Line:80] - [ INFO]-[thread:12720]-[process:6400] : Node ('192.168.2.234', 64695) connected, uuid: d63038e1
+[2021-05-03 13:57:30,771] - proxy.py [Line:81] - [DEBUG]-[thread:12720]-[process:6400] : Total 1 node(s)
+[2021-05-03 13:57:30,867] - proxy.py [Line:80] - [ INFO]-[thread:12720]-[process:6400] : Node ('192.168.2.234', 64696) connected, uuid: 20b29ba5
+[2021-05-03 13:57:30,899] - proxy.py [Line:81] - [DEBUG]-[thread:12720]-[process:6400] : Total 2 node(s)
+[2021-05-03 13:57:31,279] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 2eba3fdb25682857526e2466459fd668 | seq: 0 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:31,295] - proxy.py [Line:154] - [DEBUG]-[thread:6156]-[process:6400] : [20b29ba5] -> hash: 568dab62300983ac32d18a24daab6e27 | seq: 20 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:31,295] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (0,2924)
+[2021-05-03 13:57:31,295] - proxy.py [Line:189] - [DEBUG]-[thread:6156]-[process:6400] : the buffer data is:[(20,6021)]
+[2021-05-03 13:57:31,295] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:31,298] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(20,6021)]
+[2021-05-03 13:57:31,298] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (20,6021)
+[2021-05-03 13:57:31,303] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:31,819] - proxy.py [Line:154] - [DEBUG]-[thread:6156]-[process:6400] : [20b29ba5] -> hash: 828a1331383fa3592660156937bb00b4 | seq: 21 | message: "None" | package length: 16 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:31,835] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 83a659607f271736f4bb334e0b5cdc55 | seq: 1 | message: "None" | package length: 16 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:31,835] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (21,6021)
+[2021-05-03 13:57:31,835] - proxy.py [Line:189] - [DEBUG]-[thread:6156]-[process:6400] : the buffer data is:[(22,6021)]
+[2021-05-03 13:57:31,836] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(22,6021), (1,111922), (2,73589)]
+[2021-05-03 13:57:31,851] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(22,6021), (1,111922), (2,73589)]
+[2021-05-03 13:57:31,851] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (22,6021)
+[2021-05-03 13:57:31,853] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(1,111922), (2,73589)]
+[2021-05-03 13:57:31,853] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (1,111922)
+[2021-05-03 13:57:31,857] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(2,73589)]
+[2021-05-03 13:57:31,857] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (2,73589)
+[2021-05-03 13:57:31,862] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:32,376] - proxy.py [Line:154] - [DEBUG]-[thread:6156]-[process:6400] : [20b29ba5] -> hash: b47990e7cbe9b261619bf8a81269033b | seq: 23 | message: "None" | package length: 32 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:32,376] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: d80d06fc724d71585e8ffe8ed0d949e1 | seq: 3 | message: "None" | package length: 32 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:32,423] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (23,6021)
+[2021-05-03 13:57:32,423] - proxy.py [Line:189] - [DEBUG]-[thread:6156]-[process:6400] : the buffer data is:[(24,6021), (25,6021), (26,1203)]
+[2021-05-03 13:57:32,423] - proxy.py [Line:167] - [WARNING]-[thread:13700]-[process:6400] : The buffer size is 3 of 5 now, but received payload size is 4, the package will be discarded!
+[2021-05-03 13:57:32,439] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(24,6021), (25,6021), (26,1203)]
+[2021-05-03 13:57:32,439] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (24,6021)
+[2021-05-03 13:57:32,442] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(25,6021), (26,1203)]
+[2021-05-03 13:57:32,442] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (25,6021)
+[2021-05-03 13:57:32,445] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(26,1203)]
+[2021-05-03 13:57:32,445] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (26,1203)
+[2021-05-03 13:57:32,449] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:32,960] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: bd307a43e84f099fa456cf5299e8142f | seq: 3 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:32,960] - proxy.py [Line:154] - [DEBUG]-[thread:6156]-[process:6400] : [20b29ba5] -> hash: 8bbe81ecb54f725a14e5a5e83f477cc0 | seq: 27 | message: "None" | package length: 24 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:33,009] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (3,59244)
+[2021-05-03 13:57:33,009] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(27,1203), (28,1203), (29,1203)]
+[2021-05-03 13:57:33,009] - proxy.py [Line:189] - [DEBUG]-[thread:6156]-[process:6400] : the buffer data is:[(27,1203), (28,1203), (29,1203)]
+[2021-05-03 13:57:33,023] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(27,1203), (28,1203), (29,1203)]
+[2021-05-03 13:57:33,023] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (27,1203)
+[2021-05-03 13:57:33,026] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(28,1203), (29,1203)]
+[2021-05-03 13:57:33,026] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (28,1203)
+[2021-05-03 13:57:33,030] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(29,1203)]
+[2021-05-03 13:57:33,030] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (29,1203)
+[2021-05-03 13:57:33,033] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:33,550] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 96945dfa9693d9bcdc9495cafbbed219 | seq: 4 | message: "None" | package length: 16 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:33,581] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (4,26791)
+[2021-05-03 13:57:33,581] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(5,11622)]
+[2021-05-03 13:57:33,596] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(5,11622)]
+[2021-05-03 13:57:33,596] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (5,11622)
+[2021-05-03 13:57:33,599] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:34,123] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 53da84249623875d699d1734c1c5e6dc | seq: 6 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:34,155] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (6,11622)
+[2021-05-03 13:57:34,155] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:34,172] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:34,696] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 2aa8e5f0d37018b2af55972e5b76e227 | seq: 7 | message: "None" | package length: 64 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:34,728] - proxy.py [Line:167] - [WARNING]-[thread:13700]-[process:6400] : The buffer size is 0 of 5 now, but received payload size is 8, the package will be discarded!
+[2021-05-03 13:57:35,301] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 53da84249623875d699d1734c1c5e6dc | seq: 7 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:35,333] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (7,11622)
+[2021-05-03 13:57:35,333] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:35,336] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:35,876] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: d2ab7693f1e8a3a71607809da4ed8721 | seq: 8 | message: "None" | package length: 16 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:35,908] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(8,11622), (9,11622)]
+[2021-05-03 13:57:35,908] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (8,11622)
+[2021-05-03 13:57:35,923] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(9,11622)]
+[2021-05-03 13:57:35,923] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (9,11622)
+[2021-05-03 13:57:35,926] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:36,450] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: f673f7e93e524f22dc2783c7662d2712 | seq: 10 | message: "None" | package length: 32 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:36,482] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (10,11622)
+[2021-05-03 13:57:36,482] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(11,16697), (12,16697), (13,16697)]
+[2021-05-03 13:57:36,499] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(11,16697), (12,16697), (13,16697)]
+[2021-05-03 13:57:36,499] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (11,16697)
+[2021-05-03 13:57:36,503] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(12,16697), (13,16697)]
+[2021-05-03 13:57:36,503] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (12,16697)
+[2021-05-03 13:57:36,507] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(13,16697)]
+[2021-05-03 13:57:36,507] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (13,16697)
+[2021-05-03 13:57:36,510] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:37,007] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 2fd7a4e76f0bcc36aaa6a6b9b9087a43 | seq: 14 | message: "None" | package length: 8 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:37,038] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (14,7885)
+[2021-05-03 13:57:37,038] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:37,041] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:37,580] - proxy.py [Line:154] - [DEBUG]-[thread:13700]-[process:6400] : [d63038e1] -> hash: 43480cc60b36d48bce4cf49f5bd5811b | seq: 15 | message: "None" | package length: 40 | payload data type: integer | ACK:  | 
+[2021-05-03 13:57:37,580] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (15,7885)
+[2021-05-03 13:57:37,580] - proxy.py [Line:189] - [DEBUG]-[thread:13700]-[process:6400] : the buffer data is:[(16,7885), (17,6021), (18,6021), (19,6021)]
+[2021-05-03 13:57:37,596] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(16,7885), (17,6021), (18,6021), (19,6021)]
+[2021-05-03 13:57:37,596] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (16,7885)
+[2021-05-03 13:57:37,599] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(17,6021), (18,6021), (19,6021)]
+[2021-05-03 13:57:37,599] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (17,6021)
+[2021-05-03 13:57:37,602] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(18,6021), (19,6021)]
+[2021-05-03 13:57:37,602] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (18,6021)
+[2021-05-03 13:57:37,603] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[(19,6021)]
+[2021-05-03 13:57:37,603] - proxy.py [Line:116] - [DEBUG]-[thread:1560]-[process:6400] : consume seq data (19,6021)
+[2021-05-03 13:57:37,606] - proxy.py [Line:189] - [DEBUG]-[thread:1560]-[process:6400] : the buffer data is:[]
+[2021-05-03 13:57:37,606] - proxy.py [Line:197] - [ INFO]-[thread:1560]-[process:6400] : The ordered packages has been full-filled, job is done.
+[2021-05-03 13:57:37,606] - proxy.py [Line:200] - [ INFO]-[thread:1560]-[process:6400] : Close connection of d63038e1
+[2021-05-03 13:57:37,607] - proxy.py [Line:200] - [ INFO]-[thread:1560]-[process:6400] : Close connection of 20b29ba5
