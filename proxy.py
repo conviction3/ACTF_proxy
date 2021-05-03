@@ -2,10 +2,9 @@ from threading import Thread, Lock
 import socket
 from package import receive_package, Package, Header, PackageDataType, send_package, send_message
 from socket import socket as Socket
-from app.utils import Logger, generate_client_uuid, read_csv_int, get_obj_hash, int_list_to_bytes
+from app.utils import Logger, generate_client_uuid, int_list_to_bytes
 from typing import List, Tuple
 import queue
-import time
 import sqlite3
 
 log = Logger()
@@ -218,90 +217,3 @@ class Proxy:
         package.generate_default_header()
         package.get_header().set_message("Ordered min value group")
         send_package(package, s)
-
-# ---------------------------> deprecated for now <---------------------------------------
-# def check_ordered_packages(self, _log: False) -> bool:
-#     """
-#         Check the status of ordered package list
-#     :param _log: print the status or not
-#     :return: False: if the list is not full
-#     """
-#     none_count = 0
-#     for item in self.ordered_packages:
-#         if item is None and not _log:
-#             return False
-#         if item is None and _log:
-#             none_count += 1
-#     if _log:
-#         log.debug(f"{len(self.ordered_packages) - none_count} of {len(self.ordered_packages)}"
-#                   f" ordered packages is filled")
-#     if none_count == 0:
-#         return True
-#     else:
-#         return False
-
-# def start_receive_thread(self, client: Client):
-#     def temp():
-#         while True:
-#             result = receive_package(client.socket)
-#             if isinstance(result, Header):
-#                 header = result
-#                 log.debug(f"<- message: \"{header.get_message()}\" "
-#                           f"| hash: {header.get_package_hashcode()}")
-#             else:
-#                 package = result
-#                 header = result.get_header()
-#                 log.debug("<- " + package.get_desc())
-#                 if header.has_ack():
-#                     log.info(
-#                         f"Slice {header.get_ack(parse=True)} done by client {client.uuid}, "
-#                         f"result = {package.get_payload(parse=True)}")
-#
-#     t = Thread(target=temp)
-#     t.start()
-
-# def __get_data_slice(self) -> Tuple[int, int]:
-#     """
-#         Supposed the csv file should be split into different data to send to
-#     different clients. There must be a method to deal with the slice of the
-#     data.
-#         The slice should be determined by the number of clients、the data has
-#     been assigned and has been finished by client, and the data that has been
-#     assigned but not been finished ( client offline or timeout ).
-#     :return:
-#     """
-#     if len(self.assigned_data) == 0:
-#         return 0, 10
-#
-#     _max_slice_left = 0
-#     for row_data in self.assigned_data:
-#         # todo: reassigned the failed data
-#         # find the max slice
-#         _max_slice_left = max(row_data.slice[0], _max_slice_left)
-#     return _max_slice_left, _max_slice_left + 10
-#
-# def send_raw_data(self, client: Client):
-#     file_name = "./data/distribution_add_data_1.csv"
-#     # load data from file
-#     _slice = self.__get_data_slice()
-#     slice_data = read_csv_int(file_name, _slice[0], _slice[1])
-#     row_data_desc = RowDataDesc(_slice=_slice, _hash=get_obj_hash(slice_data), file_name=file_name)
-#
-#     package = Package(payload=int_list_to_bytes(slice_data), data_type=PackageDataType.INT)
-#     msg = "transmit raw data"
-#     package.generate_default_header(msg)
-#     send_package(package, client.socket)
-#
-#     log.debug(
-#         f"-> Sending raw data[{_slice[0]}:{_slice[1]}] to client \"{client.uuid}\" | "
-#         + package.get_desc())
-
-# class RowDataDesc:
-#     def __init__(self, _slice: Tuple[int, int], _hash: str, file_name: str = None):
-#         self.slice = _slice
-#         self.hash = _hash
-#         self.filename = file_name
-#         self.start_time = time.time()
-#         self.end_time = None
-#         self.finished = False
-# ---------------------------> deprecated for now <---------------------------------------
